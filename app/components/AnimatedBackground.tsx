@@ -18,13 +18,8 @@ export default function AnimatedBackground() {
   
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950" />
-      
-      {/* Animated dots grid */}
-      <div className="absolute inset-0 opacity-20 dark:opacity-30">
-        <div className="absolute w-full h-full bg-dot-pattern bg-[length:20px_20px]" />
-      </div>
+      {/* Semi-transparent overlay to create depth with the global background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/70 to-gray-100/70 dark:from-gray-900/70 dark:to-gray-950/70 backdrop-blur-[1px]" />
       
       {/* Interactive gradient that follows mouse */}
       <motion.div 
