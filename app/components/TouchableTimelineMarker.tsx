@@ -83,7 +83,7 @@ export default function TouchableTimelineMarker({
   if (compact) {
     return (
       <motion.div 
-        className="relative cursor-pointer z-10 mb-2 flex items-start sm:items-center justify-center" 
+        className="relative cursor-pointer z-10 mb-2" 
         onClick={handleClick}
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
@@ -91,6 +91,9 @@ export default function TouchableTimelineMarker({
         style={{ 
           minWidth: '44px', 
           minHeight: '44px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         {/* Compact marker dot */}
@@ -138,7 +141,7 @@ export default function TouchableTimelineMarker({
   // Default horizontal marker
   return (
     <motion.div 
-      className="relative cursor-pointer z-10 flex items-start sm:items-center justify-center"
+      className="relative cursor-pointer z-10"
       onClick={handleClick}
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -147,6 +150,9 @@ export default function TouchableTimelineMarker({
       style={{ 
         minWidth: '44px', 
         minHeight: '44px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       {/* Year label */}
