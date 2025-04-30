@@ -99,7 +99,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
     const ref = jobRefs.current[index];
     if (ref) {
       // If the sticky header is visible, adjust scroll position to account for it
-      const offset = headerVisible ? -60 : 0;
+      const offset = headerVisible ? -80 : 0;
       const topPosition = ref.getBoundingClientRect().top + window.pageYOffset + offset;
       window.scrollTo({ top: topPosition, behavior: 'smooth' });
     }
@@ -133,10 +133,10 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
         animate={headerVisible ? "visible" : "hidden"}
         transition={{ duration: 0.3 }}
       >
-        <div className="max-w-5xl mx-auto px-4 py-2">
+        <div className="max-w-5xl mx-auto px-4 py-3">
           <div className="flex flex-col sm:flex-row items-center justify-between">
             {/* Name and title */}
-            <div className="flex items-center mb-2 sm:mb-0">
+            <div className="flex items-center mb-3 sm:mb-0">
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
                 Nnaemeka Abah
               </h2>
@@ -161,7 +161,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
                 ></motion.div>
                 
                 {/* Year markers */}
-                <div className="flex justify-between items-center h-10 relative">
+                <div className="flex justify-between items-center h-12 relative">
                   {timelineMarkers.map((marker, index) => (
                     <TimelineMarker 
                       key={index} 
@@ -176,6 +176,9 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
             </div>
           </div>
         </div>
+        
+        {/* Extra padding div to create space under the sticky header */}
+        <div className="h-3"></div>
       </motion.div>
       
       {/* Main experience section */}
@@ -192,7 +195,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
             revealDirection="up"
             delay={0.2}
             threshold={0.2}
-            className="mb-12 pt-4"
+            className="mb-16 pt-4"
           >
             <div className="relative">
               {/* Horizontal line */}
@@ -221,8 +224,8 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
             </div>
           </ScrollRevealSection>
           
-          {/* Job cards */}
-          <div className="space-y-16">
+          {/* Job cards - added extra top margin */}
+          <div className="space-y-16 mt-10">
             {jobs.map((job, index) => {
               // Alternate animation directions for job cards
               const direction = index % 2 === 0 ? 'left' : 'right';

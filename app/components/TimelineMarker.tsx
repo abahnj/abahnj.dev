@@ -74,7 +74,7 @@ export default function TimelineMarker({
   if (compact) {
     return (
       <motion.div 
-        className="relative cursor-pointer z-10"
+        className="relative cursor-pointer z-10 mb-2" // Added bottom margin
         onClick={onClick}
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
@@ -103,9 +103,9 @@ export default function TimelineMarker({
           />
         </motion.div>
         
-        {/* Compact year label */}
+        {/* Compact year label - made more space below */}
         <motion.div 
-          className={`absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs font-medium
+          className={`absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium
             ${isSelected 
               ? 'text-blue-600 dark:text-blue-400' 
               : 'text-gray-500 dark:text-gray-400'}`}
