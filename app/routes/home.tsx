@@ -7,7 +7,8 @@ import Skills from "../components/Skills";
 import Education from "../components/Education";
 import Footer from "../components/Footer";
 import AnimatedBackground from "../components/AnimatedBackground";
-import { useRef } from "react";
+import LoadingScreen from "../components/LoadingScreen";
+import { useRef, useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -17,6 +18,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
+  // Loading screen state
+  const [isLoading, setIsLoading] = useState(true);
+  
   // Parallax scroll effect setup
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -148,13 +152,15 @@ export default function Home() {
     }
   ];
 
-  // Animation variants for page entrance
+  // Animation variants for page entrance after loading screen
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.3
+        duration: 1,
+        staggerChildren: 0.3,
+        ease: "easeOut"
       }
     }
   };
@@ -167,84 +173,100 @@ export default function Home() {
     { name: "Kotlin", delay: 1.5 },
   ];
 
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+  };
+
   return (
-    <motion.div
-      ref={containerRef}
-      className="min-h-screen overflow-hidden relative"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Animated background with interactive elements */}
-      <AnimatedBackground />
+    <>
+      {/* Loading screen with letter-by-letter name animation */}
+      {isLoading && (
+        <LoadingScreen 
+          name="Nnaemeka Abah" 
+          title="Software Engineer" 
+          onAnimationComplete={handleLoadingComplete} 
+        />
+      )}
       
-      <div className="container mx-auto max-w-5xl px-4 py-8 relative z-10">
-        {/* Parallax floating dots in the background */}
-        <div className="absolute top-0 right-0 w-1/2 h-screen pointer-events-none overflow-hidden">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute h-2 w-2 rounded-full bg-blue-500/20 dark:bg-blue-400/30"
-              style={{ 
-                top: `${Math.random() * 100}%`, 
-                left: `${Math.random() * 100}%`,
-                scale: 0.5 + Math.random() * 1
-              }}
-              animate={{
-                y: [0, -10, 0],
-                opacity: [0.3, 0.8, 0.3]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 3 + Math.random() * 5,
-                delay: i * 0.2
-              }}
-            />
-          ))}
+      {/* Main content that appears after loading completes */}
+      <motion.div
+        ref={containerRef}
+        className="min-h-screen overflow-hidden relative"
+        variants={containerVariants}
+        initial="hidden"
+        animate={!isLoading ? "visible" : "hidden"}
+      >
+        {/* Animated background with interactive elements */}
+        <AnimatedBackground />
+        
+        <div className="container mx-auto max-w-5xl px-4 py-8 relative z-10">
+          {/* Parallax floating dots in the background */}
+          <div className="absolute top-0 right-0 w-1/2 h-screen pointer-events-none overflow-hidden">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute h-2 w-2 rounded-full bg-blue-500/20 dark:bg-blue-400/30"
+                style={{ 
+                  top: `${Math.random() * 100}%`, 
+                  left: `${Math.random() * 100}%`,
+                  scale: 0.5 + Math.random() * 1
+                }}
+                animate={{
+                  y: [0, -10, 0],
+                  opacity: [0.3, 0.8, 0.3]
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 3 + Math.random() * 5,
+                  delay: i * 0.2
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Floating tech icons */}
+          <div className="absolute left-0 h-full pointer-events-none flex flex-col justify-around items-start">
+            {techIcons.map((icon, index) => (
+              <motion.div
+                key={index}
+                className="text-blue-600/30 dark:text-blue-400/20 font-mono text-xl"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ 
+                  opacity: 0.6,
+                  x: 0,
+                  y: [0, -10, 0]
+                }}
+                transition={{
+                  opacity: { delay: icon.delay, duration: 1 },
+                  x: { delay: icon.delay, duration: 1 },
+                  y: { 
+                    repeat: Infinity, 
+                    duration: 4, 
+                    ease: "easeInOut",
+                    delay: icon.delay
+                  }
+                }}
+              >
+                {`<${icon.name} />`}
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* Main content with parallax effects */}
+          <motion.div style={{ y: headerParallax }}>
+            <Header name="Nnaemeka Abah" title="Software Engineer" />
+          </motion.div>
+          
+          <motion.div style={{ y: profileParallax }}>
+            <Profile summary={profile.summary} contact={profile.contact} />
+          </motion.div>
+          
+          <Experience jobs={jobs} />
+          <Skills skillCategories={skillCategories} />
+          <Education education={education} />
+          <Footer />
         </div>
-        
-        {/* Floating tech icons */}
-        <div className="absolute left-0 h-full pointer-events-none flex flex-col justify-around items-start">
-          {techIcons.map((icon, index) => (
-            <motion.div
-              key={index}
-              className="text-blue-600/30 dark:text-blue-400/20 font-mono text-xl"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ 
-                opacity: 0.6,
-                x: 0,
-                y: [0, -10, 0]
-              }}
-              transition={{
-                opacity: { delay: icon.delay, duration: 1 },
-                x: { delay: icon.delay, duration: 1 },
-                y: { 
-                  repeat: Infinity, 
-                  duration: 4, 
-                  ease: "easeInOut",
-                  delay: icon.delay
-                }
-              }}
-            >
-              {`<${icon.name} />`}
-            </motion.div>
-          ))}
-        </div>
-        
-        {/* Main content with parallax effects */}
-        <motion.div style={{ y: headerParallax }}>
-          <Header name="Nnaemeka Abah" title="Software Engineer" />
-        </motion.div>
-        
-        <motion.div style={{ y: profileParallax }}>
-          <Profile summary={profile.summary} contact={profile.contact} />
-        </motion.div>
-        
-        <Experience jobs={jobs} />
-        <Skills skillCategories={skillCategories} />
-        <Education education={education} />
-        <Footer />
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 }
