@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import type { Route } from "./+types/home";
 import Header from "../components/Header";
 import Profile from "../components/Profile";
-import Experience from "../components/Experience";
+import ExperienceTimeline from "../components/ExperienceTimeline";
 import Skills from "../components/Skills";
 import Education from "../components/Education";
 import Footer from "../components/Footer";
@@ -261,7 +261,7 @@ export default function Home() {
             <Profile summary={profile.summary} contact={profile.contact} />
           </motion.div>
           
-          <Experience jobs={jobs} />
+          <ExperienceTimeline jobs={jobs} />
           <Skills skillCategories={skillCategories} />
           <Education education={education} />
           <Footer />

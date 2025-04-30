@@ -12,11 +12,11 @@ This document outlines planned UI/UX improvements for the resume site, sorted by
 - [x] Optimize animation timing for smooth scrolling experience
 
 ### Interactive Timeline for Experience
-- [ ] Design visual timeline with year markers
-- [ ] Implement interactive highlighting on timeline segments
-- [ ] Add smooth transitions between job selections
-- [ ] Create visual connections between timeline and job descriptions
-- [ ] Ensure timeline is responsive on all devices
+- [x] Design visual timeline with year markers
+- [x] Implement interactive highlighting on timeline segments
+- [x] Add smooth transitions between job selections
+- [x] Create visual connections between timeline and job descriptions
+- [x] Ensure timeline is responsive on all devices
 
 ### Progressive Skill Visualization
 - [ ] Replace static skill tags with animated skill indicators
