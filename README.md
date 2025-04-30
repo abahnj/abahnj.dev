@@ -1,87 +1,46 @@
-# Welcome to React Router!
+# abahnj.dev - Personal Resume Website
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A modern, interactive resume website built using React Router 7 and Framer Motion.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Interactive timeline for work experience navigation
+- Animated sections that reveal as you scroll
+- Mobile-optimized interface with swipe gestures
+- Smooth page transitions and microinteractions
+- Dark mode support
+- Motion effects and parallax scrolling
 
-## Getting Started
+## Technology Stack
 
-### Installation
+- React 19
+- React Router 7
+- Framer Motion for animations
+- TailwindCSS 4 for styling
+- TypeScript
 
-Install the dependencies:
+## Development
+
+To run this project locally:
 
 ```bash
+# Install dependencies
 npm install
-```
 
-### Development
-
-Start the development server with HMR:
-
-```bash
+# Start development server
 npm run dev
-```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
+# Build for production
 npm run build
-```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+# Preview production build
+npm run start
 ```
 
 ## Styling
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+The site uses TailwindCSS v4 for styling with custom animations and transitions defined in app.css.
 
 ---
 
-Built with ❤️ using React Router.
+Built by [Nnaemeka Abah](https://github.com/abahnj)
