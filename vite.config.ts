@@ -5,5 +5,5 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
-  base: "/abahnj.dev/", // Add base path for GitHub Pages
+  base: "/", // Root path for username.github.io site
 });
