@@ -4,13 +4,70 @@ interface TimelineMarkerProps {
   year: string;
   isSelected: boolean;
   onClick: () => void;
+  vertical?: boolean;
 }
 
 export default function TimelineMarker({ 
   year, 
   isSelected, 
-  onClick 
+  onClick,
+  vertical = false
 }: TimelineMarkerProps) {
+  // Animation for both horizontal and vertical markers
+  const markerAnimation = {
+    scale: isSelected ? 1.2 : 1,
+    transition: { type: "spring", stiffness: 300, damping: 15 }
+  };
+
+  if (vertical) {
+    return (
+      <motion.div 
+        className="relative cursor-pointer flex items-center w-full"
+        onClick={onClick}
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Timeline marker */}
+        <motion.div 
+          className={`w-6 h-6 rounded-full flex items-center justify-center
+            ${isSelected 
+              ? 'bg-blue-500 dark:bg-blue-400 shadow-md shadow-blue-200 dark:shadow-blue-900/40' 
+              : 'bg-gray-300 dark:bg-gray-700'}`}
+          whileHover={{ scale: 1.2 }}
+          animate={markerAnimation}
+        >
+          <motion.div 
+            className={`w-3 h-3 rounded-full 
+              ${isSelected 
+                ? 'bg-white dark:bg-gray-900' 
+                : 'bg-gray-100 dark:bg-gray-600'}`}
+            animate={{ 
+              scale: isSelected ? 0.8 : 1
+            }}
+            transition={{ duration: 0.2 }}
+          />
+        </motion.div>
+        
+        {/* Year label (to the right of the marker) */}
+        <motion.div 
+          className={`ml-4 text-sm font-semibold transition-colors duration-300
+            ${isSelected 
+              ? 'text-blue-600 dark:text-blue-400 font-medium' 
+              : 'text-gray-500 dark:text-gray-400'}`}
+          animate={{ 
+            x: isSelected ? 3 : 0,
+            fontWeight: isSelected ? 600 : 500
+          }}
+          transition={{ duration: 0.2 }}
+        >
+          {year}
+        </motion.div>
+      </motion.div>
+    );
+  }
+
+  // Default horizontal marker
   return (
     <motion.div 
       className="relative cursor-pointer"
@@ -22,7 +79,9 @@ export default function TimelineMarker({
       {/* Year label */}
       <motion.div 
         className={`absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs font-semibold
-          ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
+          ${isSelected 
+            ? 'text-blue-600 dark:text-blue-400' 
+            : 'text-gray-500 dark:text-gray-400'}`}
         animate={{ 
           scale: isSelected ? 1.1 : 1,
           y: isSelected ? -2 : 0
@@ -39,7 +98,7 @@ export default function TimelineMarker({
             ? 'bg-blue-500 dark:bg-blue-400 shadow-md shadow-blue-200 dark:shadow-blue-900/40' 
             : 'bg-gray-300 dark:bg-gray-700'}`}
         whileHover={{ scale: 1.2 }}
-        transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        animate={markerAnimation}
       >
         <motion.div 
           className={`w-3 h-3 rounded-full 
