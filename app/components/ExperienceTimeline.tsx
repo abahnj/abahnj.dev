@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type RefObject } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import TimelineMarker from './TimelineMarker';
+import TouchableTimelineMarker from './TouchableTimelineMarker';
 import ScrollRevealSection from './ScrollRevealSection';
 import SectionTitle from './SectionTitle';
+import useSwipe from '../hooks/useSwipe';
+import { SwipeDirection, triggerHapticFeedback } from '../utils/touchInteractions';
+import SwipeIndicator from './SwipeIndicator';
 
 interface Job {
   title: string;
@@ -20,8 +23,11 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [timelineMarkers, setTimelineMarkers] = useState<{ year: string, index: number }[]>([]);
   const [headerVisible, setHeaderVisible] = useState(false);
+  const [showSwipeIndicator, setShowSwipeIndicator] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
   const jobRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Create a ref for the container
+  const experienceContainerRef = useRef<HTMLDivElement>(null);
   
   // Initialize job refs array based on jobs length
   useEffect(() => {
@@ -35,6 +41,35 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
   
   // Scroll position for sticky header
   const { scrollY } = useScroll();
+  
+  // Handle swipe gestures on the experience container
+  const handleSwipe = (direction: SwipeDirection) => {
+    // Hide swipe indicator after first swipe
+    if (showSwipeIndicator) {
+      setShowSwipeIndicator(false);
+    }
+    
+    if (direction === SwipeDirection.LEFT) {
+      // Swipe left -> go to next job (if not at the end)
+      if (activeIndex < jobs.length - 1) {
+        triggerHapticFeedback('medium');
+        scrollToJob(activeIndex + 1);
+      }
+    } else if (direction === SwipeDirection.RIGHT) {
+      // Swipe right -> go to previous job (if not at the beginning)
+      if (activeIndex > 0) {
+        triggerHapticFeedback('medium');
+        scrollToJob(activeIndex - 1);
+      }
+    }
+  };
+  
+  // Setup swipe detection on the experience container
+  useSwipe(experienceContainerRef, handleSwipe, {
+    minDistance: 40,
+    maxDuration: 500,
+    enableHapticFeedback: true
+  });
   
   // Check when experience section is at the top of viewport to show sticky header
   useEffect(() => {
@@ -125,6 +160,11 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
 
   return (
     <>
+      {/* Mobile swipe indicator */}
+      {showSwipeIndicator && (
+        <SwipeIndicator direction="both" showOnlyOnMobile={true} />
+      )}
+      
       {/* Sticky header with timeline */}
       <motion.div 
         className={`fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-md transition-opacity duration-300 ${headerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -163,7 +203,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
                 {/* Year markers */}
                 <div className="flex justify-between items-center h-12 relative">
                   {timelineMarkers.map((marker, index) => (
-                    <TimelineMarker 
+                    <TouchableTimelineMarker 
                       key={index} 
                       year={marker.year}
                       isSelected={activeIndex === index}
@@ -213,7 +253,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
               {/* Year markers */}
               <div className="flex justify-between items-center h-16 relative">
                 {timelineMarkers.map((marker, index) => (
-                  <TimelineMarker 
+                  <TouchableTimelineMarker 
                     key={index} 
                     year={marker.year}
                     isSelected={activeIndex === index}
@@ -225,7 +265,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
           </ScrollRevealSection>
           
           {/* Job cards - added extra top margin */}
-          <div className="space-y-16 mt-10">
+          <div ref={experienceContainerRef} className="space-y-16 mt-10">
             {jobs.map((job, index) => {
               // Alternate animation directions for job cards
               const direction = index % 2 === 0 ? 'left' : 'right';
@@ -247,8 +287,10 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
                       transition-shadow relative border-l-4 
                       ${activeIndex === index 
                         ? (index % 2 === 0 ? 'border-blue-500' : 'border-purple-500') 
-                        : 'border-gray-300 dark:border-gray-700'}`}
+                        : 'border-gray-300 dark:border-gray-700'}
+                      touch-manipulation`} // Added touch-manipulation for better mobile touch handling
                     whileHover={{ scale: 1.01, x: index % 2 === 0 ? 5 : -5 }}
+                    whileTap={{ scale: 0.98 }} // Added tap animation for touch feedback
                     animate={{
                       borderLeftColor: activeIndex === index 
                         ? (index % 2 === 0 ? '#3b82f6' : '#8b5cf6') 

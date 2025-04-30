@@ -6,6 +6,17 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
+/* Touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    touch-action: manipulation;
+  }
+  
+  :root {
+    --min-touch-target: 44px;
+  }
+}
+
 /* Code pattern background */
 .bg-dot-pattern {
   background-image: radial-gradient(circle, #3b82f6 1px, transparent 1px);

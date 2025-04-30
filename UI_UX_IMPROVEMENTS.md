@@ -26,11 +26,11 @@ This document outlines planned UI/UX improvements for the resume site, sorted by
 - [ ] Create consistent visual language across skill groups
 
 ### Mobile Touch Optimizations
-- [ ] Implement swipe gestures for section navigation
-- [ ] Optimize all touch targets for mobile (min 44×44px)
-- [ ] Create mobile-specific animations that consider device performance
-- [ ] Add haptic feedback for interactive elements where supported
-- [ ] Test and refine mobile experience across different device sizes
+- [x] Implement swipe gestures for section navigation
+- [x] Optimize all touch targets for mobile (min 44×44px)
+- [x] Create mobile-specific animations that consider device performance
+- [x] Add haptic feedback for interactive elements where supported
+- [x] Test and refine mobile experience across different device sizes
 
 ## Medium Impact Improvements
 
