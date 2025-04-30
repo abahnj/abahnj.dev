@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import TimelineMarker from './TimelineMarker';
 import ScrollRevealSection from './ScrollRevealSection';
 import SectionTitle from './SectionTitle';
@@ -19,6 +19,7 @@ interface ExperienceTimelineProps {
 export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [timelineMarkers, setTimelineMarkers] = useState<{ year: string, index: number }[]>([]);
+  const [headerVisible, setHeaderVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const jobRefs = useRef<(HTMLDivElement | null)[]>([]);
   
@@ -29,16 +30,30 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
   
   // Setup scrolling behavior
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
     offset: ["start start", "end end"]
   });
   
-  // Timeline animation - follows scroll progress
-  const timelineOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
-  const timelineY = useTransform(scrollYProgress, [0, 0.05], [20, 0]);
+  // Scroll position for sticky header
+  const { scrollY } = useScroll();
   
+  // Check when experience section is at the top of viewport to show sticky header
   useEffect(() => {
-    // Extract years from job periods to create timeline markers
+    const checkSectionPosition = () => {
+      if (sectionRef.current) {
+        const sectionTop = sectionRef.current.getBoundingClientRect().top;
+        const sectionBottom = sectionRef.current.getBoundingClientRect().bottom;
+        
+        // Show header when experience section is in view but the title has scrolled out
+        setHeaderVisible(sectionTop < 100 && sectionBottom > window.innerHeight / 2);
+      }
+    };
+    
+    window.addEventListener('scroll', checkSectionPosition);
+    return () => window.removeEventListener('scroll', checkSectionPosition);
+  }, []);
+  
+  // Extract years from job periods to create timeline markers
+  useEffect(() => {
     const markers = jobs.map((job, index) => {
       // Extract the first year from period (assuming format "MM/YYYY—Present" or "MM/YYYY—MM/YYYY")
       const yearMatch = job.period.match(/(\d{4})/);
@@ -64,7 +79,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
       },
       {
         rootMargin: '-20% 0px -60% 0px', // Consider element in view when it's in the middle portion of viewport
-        threshold: 0.1
+        threshold: 0.2
       }
     );
     
@@ -83,7 +98,10 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
   const scrollToJob = (index: number) => {
     const ref = jobRefs.current[index];
     if (ref) {
-      ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // If the sticky header is visible, adjust scroll position to account for it
+      const offset = headerVisible ? -60 : 0;
+      const topPosition = ref.getBoundingClientRect().top + window.pageYOffset + offset;
+      window.scrollTo({ top: topPosition, behavior: 'smooth' });
     }
   };
   
@@ -99,182 +117,206 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
     })
   };
 
+  // Sticky header animation variants
+  const headerVariants = {
+    hidden: { y: -100, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
+
   return (
-    <motion.section 
-      ref={sectionRef}
-      className="mb-16 relative pt-8"
-      id="experience"
-    >
-      <div className="max-w-5xl mx-auto px-4">
-        <SectionTitle title="Experience" />
-      </div>
-      
-      <div className="flex flex-col md:flex-row">
-        {/* Sidebar timeline (visible on medium screens and up) */}
-        <motion.div 
-          className="hidden md:block md:w-1/5 lg:w-1/6 sticky top-8 self-start h-screen pt-24 pb-8 pr-4 overflow-hidden"
-          style={{
-            opacity: timelineOpacity,
-            y: timelineY
-          }}
-        >
-          <div className="relative h-full flex flex-col items-center">
-            {/* Vertical timeline line */}
-            <div className="absolute h-full w-0.5 bg-gray-300 dark:bg-gray-700 left-0 ml-3 z-0"></div>
+    <>
+      {/* Sticky header with timeline */}
+      <motion.div 
+        className={`fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-md transition-opacity duration-300 ${headerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        variants={headerVariants}
+        initial="hidden"
+        animate={headerVisible ? "visible" : "hidden"}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="max-w-5xl mx-auto px-4 py-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between">
+            {/* Name and title */}
+            <div className="flex items-center mb-2 sm:mb-0">
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                Nnaemeka Abah
+              </h2>
+              <span className="ml-3 text-sm text-blue-600 dark:text-blue-400 font-medium">
+                Software Engineer
+              </span>
+            </div>
             
-            {/* Active position indicator */}
-            <motion.div 
-              className="absolute w-0.5 bg-blue-500 dark:bg-blue-400 left-0 ml-3 z-0"
-              style={{
-                top: 0,
-                height: `${(activeIndex / (timelineMarkers.length - 1)) * 100}%`
-              }}
-              transition={{ duration: 0.4 }}
-            ></motion.div>
-            
-            {/* Year markers */}
-            <div className="relative flex flex-col h-full justify-between py-10 w-full">
-              {timelineMarkers.map((marker, index) => (
-                <TimelineMarker 
-                  key={index} 
-                  year={marker.year}
-                  isSelected={activeIndex === index}
-                  onClick={() => scrollToJob(index)}
-                  vertical={true}
-                />
-              ))}
+            {/* Horizontal timeline */}
+            <div className="w-full sm:w-auto sm:flex-1 max-w-md relative">
+              <div className="mx-4 relative">
+                {/* Horizontal line */}
+                <div className="absolute h-0.5 bg-gray-300 dark:bg-gray-700 left-0 right-0 top-1/2 transform -translate-y-1/2 z-0"></div>
+                
+                {/* Selected position indicator */}
+                <motion.div 
+                  className="absolute h-0.5 bg-blue-500 dark:bg-blue-400 left-0 top-1/2 transform -translate-y-1/2 z-0"
+                  animate={{ 
+                    width: `${(activeIndex / (timelineMarkers.length - 1)) * 100}%` 
+                  }}
+                  transition={{ duration: 0.4 }}
+                ></motion.div>
+                
+                {/* Year markers */}
+                <div className="flex justify-between items-center h-10 relative">
+                  {timelineMarkers.map((marker, index) => (
+                    <TimelineMarker 
+                      key={index} 
+                      year={marker.year}
+                      isSelected={activeIndex === index}
+                      onClick={() => scrollToJob(index)}
+                      compact={true}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
-        
-        {/* Mobile timeline (visible only on small screens) */}
-        <ScrollRevealSection
-          revealDirection="up"
-          delay={0.2}
-          threshold={0.2}
-          className="md:hidden mb-12 pt-4"
-        >
-          <div className="relative flex items-center justify-between mx-auto">
-            {/* Horizontal line */}
-            <div className="absolute h-0.5 bg-gray-300 dark:bg-gray-700 left-0 right-0 z-0"></div>
-            
-            {/* Selected position indicator */}
-            <motion.div 
-              className="absolute h-0.5 bg-blue-500 dark:bg-blue-400 left-0 z-0"
-              animate={{ 
-                width: `${(activeIndex / (timelineMarkers.length - 1)) * 100}%` 
-              }}
-              transition={{ duration: 0.4 }}
-            ></motion.div>
-            
-            {/* Year markers */}
-            {timelineMarkers.map((marker, index) => (
-              <TimelineMarker 
-                key={index} 
-                year={marker.year}
-                isSelected={activeIndex === index}
-                onClick={() => scrollToJob(index)}
-                vertical={false}
-              />
-            ))}
-          </div>
-        </ScrollRevealSection>
-        
-        {/* Job cards */}
-        <div className="md:w-4/5 lg:w-5/6 space-y-16">
-          {jobs.map((job, index) => {
-            // Alternate animation directions for job cards
-            const direction = index % 2 === 0 ? 'left' : 'right';
-            
-            return (
-              <ScrollRevealSection
-                key={index}
-                revealDirection={direction}
-                delay={0.1}
-                threshold={0.2}
-              >
-                <motion.div 
-                  ref={(el) => {
-                    jobRefs.current[index] = el;
-                    return undefined;
-                  }}
-                  data-index={index}
-                  className={`p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg 
-                    transition-shadow relative border-l-4 
-                    ${activeIndex === index 
-                      ? (index % 2 === 0 ? 'border-blue-500' : 'border-purple-500') 
-                      : 'border-gray-300 dark:border-gray-700'}`}
-                  whileHover={{ scale: 1.01, x: index % 2 === 0 ? 5 : -5 }}
-                  animate={{
-                    borderLeftColor: activeIndex === index 
-                      ? (index % 2 === 0 ? '#3b82f6' : '#8b5cf6') 
-                      : '#d1d5db'
-                  }}
-                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                >
-                  {/* Time marker dot (visible on mobile) */}
-                  <div className={`absolute -left-3 top-6 w-6 h-6 rounded-full 
-                    ${activeIndex === index 
-                      ? 'bg-blue-500 dark:bg-blue-400' 
-                      : 'bg-gray-300 dark:bg-gray-700'} 
-                    flex items-center justify-center transition-colors duration-300`}>
-                    <div className={`w-3 h-3 rounded-full 
-                      ${activeIndex === index 
-                        ? 'bg-white dark:bg-gray-900' 
-                        : 'bg-gray-100 dark:bg-gray-600'}`} />
-                  </div>
-                  
-                  <div className="flex flex-col md:flex-row md:justify-between mb-6">
-                    <div>
-                      <h4 className={`text-xl font-semibold transition-colors duration-300
-                        ${activeIndex === index 
-                          ? 'text-blue-600 dark:text-blue-400' 
-                          : 'text-gray-700 dark:text-gray-300'}`}>
-                        {job.title}
-                      </h4>
-                      <div className="text-lg text-gray-700 dark:text-gray-300">
-                        {job.company}
-                      </div>
-                    </div>
-                    <div className="flex flex-col mt-2 md:mt-0 md:items-end">
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {job.location}
-                      </div>
-                      <div className={`text-sm font-medium px-3 py-1 rounded-full mt-1 transition-colors duration-300
-                        ${activeIndex === index 
-                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200' 
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
-                        {job.period}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <motion.ul className="list-none space-y-2 text-gray-700 dark:text-gray-300"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                  >
-                    {job.achievements.map((achievement, i) => (
-                      <motion.li 
-                        key={i}
-                        custom={i}
-                        variants={achievementVariants}
-                        className="flex items-start"
-                      >
-                        <span className={`inline-block mr-2 mt-1 transition-colors duration-300
-                          ${activeIndex === index 
-                            ? 'text-blue-500 dark:text-blue-400' 
-                            : 'text-gray-400 dark:text-gray-500'}`}>→</span>
-                        {achievement}
-                      </motion.li>
-                    ))}
-                  </motion.ul>
-                </motion.div>
-              </ScrollRevealSection>
-            );
-          })}
         </div>
-      </div>
-    </motion.section>
+      </motion.div>
+      
+      {/* Main experience section */}
+      <motion.section 
+        ref={sectionRef}
+        className="mb-16 pt-8"
+        id="experience"
+      >
+        <div className="max-w-5xl mx-auto px-4">
+          <SectionTitle title="Experience" />
+
+          {/* Main timeline (visible when not in sticky header) */}
+          <ScrollRevealSection
+            revealDirection="up"
+            delay={0.2}
+            threshold={0.2}
+            className="mb-12 pt-4"
+          >
+            <div className="relative">
+              {/* Horizontal line */}
+              <div className="absolute h-0.5 bg-gray-300 dark:bg-gray-700 left-0 right-0 top-1/2 transform -translate-y-1/2 z-0"></div>
+              
+              {/* Selected position indicator */}
+              <motion.div 
+                className="absolute h-0.5 bg-blue-500 dark:bg-blue-400 left-0 top-1/2 transform -translate-y-1/2 z-0"
+                animate={{ 
+                  width: `${(activeIndex / (timelineMarkers.length - 1)) * 100}%` 
+                }}
+                transition={{ duration: 0.4 }}
+              ></motion.div>
+              
+              {/* Year markers */}
+              <div className="flex justify-between items-center h-16 relative">
+                {timelineMarkers.map((marker, index) => (
+                  <TimelineMarker 
+                    key={index} 
+                    year={marker.year}
+                    isSelected={activeIndex === index}
+                    onClick={() => scrollToJob(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </ScrollRevealSection>
+          
+          {/* Job cards */}
+          <div className="space-y-16">
+            {jobs.map((job, index) => {
+              // Alternate animation directions for job cards
+              const direction = index % 2 === 0 ? 'left' : 'right';
+              
+              return (
+                <ScrollRevealSection
+                  key={index}
+                  revealDirection={direction}
+                  delay={0.1}
+                  threshold={0.2}
+                >
+                  <motion.div 
+                    ref={(el) => {
+                      jobRefs.current[index] = el;
+                      return undefined;
+                    }}
+                    data-index={index}
+                    className={`p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg 
+                      transition-shadow relative border-l-4 
+                      ${activeIndex === index 
+                        ? (index % 2 === 0 ? 'border-blue-500' : 'border-purple-500') 
+                        : 'border-gray-300 dark:border-gray-700'}`}
+                    whileHover={{ scale: 1.01, x: index % 2 === 0 ? 5 : -5 }}
+                    animate={{
+                      borderLeftColor: activeIndex === index 
+                        ? (index % 2 === 0 ? '#3b82f6' : '#8b5cf6') 
+                        : '#d1d5db'
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                  >
+                    {/* Time marker dot */}
+                    <div className={`absolute -left-3 top-6 w-6 h-6 rounded-full 
+                      ${activeIndex === index 
+                        ? 'bg-blue-500 dark:bg-blue-400' 
+                        : 'bg-gray-300 dark:bg-gray-700'} 
+                      flex items-center justify-center transition-colors duration-300`}>
+                      <div className={`w-3 h-3 rounded-full 
+                        ${activeIndex === index 
+                          ? 'bg-white dark:bg-gray-900' 
+                          : 'bg-gray-100 dark:bg-gray-600'}`} />
+                    </div>
+                    
+                    <div className="flex flex-col md:flex-row md:justify-between mb-6">
+                      <div>
+                        <h4 className={`text-xl font-semibold transition-colors duration-300
+                          ${activeIndex === index 
+                            ? 'text-blue-600 dark:text-blue-400' 
+                            : 'text-gray-700 dark:text-gray-300'}`}>
+                          {job.title}
+                        </h4>
+                        <div className="text-lg text-gray-700 dark:text-gray-300">
+                          {job.company}
+                        </div>
+                      </div>
+                      <div className="flex flex-col mt-2 md:mt-0 md:items-end">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          {job.location}
+                        </div>
+                        <div className={`text-sm font-medium px-3 py-1 rounded-full mt-1 transition-colors duration-300
+                          ${activeIndex === index 
+                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200' 
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
+                          {job.period}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <motion.ul className="list-none space-y-2 text-gray-700 dark:text-gray-300"
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.3 }}
+                    >
+                      {job.achievements.map((achievement, i) => (
+                        <motion.li 
+                          key={i}
+                          custom={i}
+                          variants={achievementVariants}
+                          className="flex items-start"
+                        >
+                          <span className={`inline-block mr-2 mt-1 transition-colors duration-300
+                            ${activeIndex === index 
+                              ? 'text-blue-500 dark:text-blue-400' 
+                              : 'text-gray-400 dark:text-gray-500'}`}>→</span>
+                          {achievement}
+                        </motion.li>
+                      ))}
+                    </motion.ul>
+                  </motion.div>
+                </ScrollRevealSection>
+              );
+            })}
+          </div>
+        </div>
+      </motion.section>
+    </>
   );
 }
