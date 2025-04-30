@@ -207,12 +207,12 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
             {/* Horizontal timeline */}
             <div className="w-full sm:w-auto sm:flex-1 max-w-md relative">
               <div className="mx-4 relative">
-                {/* Horizontal line */}
-                <div className="absolute h-0.5 bg-gray-300 dark:bg-gray-700 left-0 right-0 top-1/2 transform -translate-y-1/2 z-0"></div>
+                {/* Horizontal line - adjusted for better mobile alignment */}
+                <div className="absolute h-0.5 bg-gray-300 dark:bg-gray-700 left-0 right-0 top-3 sm:top-1/2 sm:transform sm:-translate-y-1/2 z-0"></div>
                 
                 {/* Selected position indicator */}
                 <motion.div 
-                  className="absolute h-0.5 bg-blue-500 dark:bg-blue-400 left-0 top-1/2 transform -translate-y-1/2 z-0"
+                  className="absolute h-0.5 bg-blue-500 dark:bg-blue-400 left-0 top-3 sm:top-1/2 sm:transform sm:-translate-y-1/2 z-0"
                   animate={{ 
                     width: `${(activeIndex / (timelineMarkers.length - 1)) * 100}%` 
                   }}
@@ -260,11 +260,11 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
           >
             <div className="relative">
               {/* Horizontal line */}
-              <div className="absolute h-0.5 bg-gray-300 dark:bg-gray-700 left-0 right-0 top-1/2 transform -translate-y-1/2 z-0"></div>
+              <div className="absolute h-0.5 bg-gray-300 dark:bg-gray-700 left-0 right-0 top-3 sm:top-1/2 sm:transform sm:-translate-y-1/2 z-0"></div>
               
               {/* Selected position indicator */}
               <motion.div 
-                className="absolute h-0.5 bg-blue-500 dark:bg-blue-400 left-0 top-1/2 transform -translate-y-1/2 z-0"
+                className="absolute h-0.5 bg-blue-500 dark:bg-blue-400 left-0 top-3 sm:top-1/2 sm:transform sm:-translate-y-1/2 z-0"
                 animate={{ 
                   width: `${(activeIndex / (timelineMarkers.length - 1)) * 100}%` 
                 }}
