@@ -5,11 +5,11 @@ This document outlines planned UI/UX improvements for the resume site, sorted by
 ## High Impact Improvements
 
 ### Scroll-Triggered Reveal Animations
-- [ ] Implement `useInView` hooks for section-based animations
-- [ ] Create staggered entrance animations for list items
-- [ ] Add alternating slide-in directions for experience cards
-- [ ] Ensure animations only trigger once per section
-- [ ] Optimize animation timing for smooth scrolling experience
+- [x] Implement `useInView` hooks for section-based animations
+- [x] Create staggered entrance animations for list items
+- [x] Add alternating slide-in directions for experience cards
+- [x] Ensure animations only trigger once per section
+- [x] Optimize animation timing for smooth scrolling experience
 
 ### Interactive Timeline for Experience
 - [ ] Design visual timeline with year markers
