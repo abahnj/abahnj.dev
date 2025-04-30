@@ -199,7 +199,7 @@ export default function Home() {
         {/* Animated background with interactive elements */}
         <AnimatedBackground />
         
-        <div className="container mx-auto max-w-5xl px-4 py-8 relative z-10">
+        <div className="container mx-auto max-w-5xl px-4 py-8 relative z-10 backdrop-blur-[2px]">
           {/* Parallax floating dots in the background */}
           <div className="absolute top-0 right-0 w-1/2 h-screen pointer-events-none overflow-hidden">
             {Array.from({ length: 20 }).map((_, i) => (

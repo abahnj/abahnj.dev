@@ -25,7 +25,6 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
   const [headerVisible, setHeaderVisible] = useState(false);
   const [showSwipeIndicator, setShowSwipeIndicator] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
-  const sectionTitleRef = useRef<HTMLDivElement>(null);
   const jobRefs = useRef<(HTMLDivElement | null)[]>([]);
   // Create a ref for the container
   const experienceContainerRef = useRef<HTMLDivElement>(null);
@@ -72,38 +71,20 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
     enableHapticFeedback: true
   });
   
-  // Check when experience section's title is at/near the top to show sticky header
+  // Check when experience section is at the top of viewport to show sticky header
   useEffect(() => {
-    // When section title scrolls out of view, show the sticky header
-    const titleObserver = new IntersectionObserver(
-      ([entry]) => {
-        // Show header when title is out of view (not intersecting)
-        setHeaderVisible(!entry.isIntersecting);
-      },
-      { 
-        rootMargin: "-10px 0px 0px 0px", // Small margin to create a smooth transition
-        threshold: 0 // Trigger as soon as it leaves the viewport
+    const checkSectionPosition = () => {
+      if (sectionRef.current) {
+        const sectionTop = sectionRef.current.getBoundingClientRect().top;
+        const sectionBottom = sectionRef.current.getBoundingClientRect().bottom;
+        
+        // Show header when experience section is in view but the title has scrolled out
+        setHeaderVisible(sectionTop < 100 && sectionBottom > window.innerHeight / 2);
       }
-    );
-    
-    // When section scrolls completely out of view, hide sticky header
-    const sectionObserver = new IntersectionObserver(
-      ([entry]) => {
-        // If section is completely out of view in the upward direction, hide header
-        if (!entry.isIntersecting && entry.boundingClientRect.top > 0) {
-          setHeaderVisible(false);
-        }
-      },
-      { threshold: 0 }
-    );
-    
-    if (sectionTitleRef.current) titleObserver.observe(sectionTitleRef.current);
-    if (sectionRef.current) sectionObserver.observe(sectionRef.current);
-    
-    return () => {
-      titleObserver.disconnect();
-      sectionObserver.disconnect();
     };
+    
+    window.addEventListener('scroll', checkSectionPosition);
+    return () => window.removeEventListener('scroll', checkSectionPosition);
   }, []);
   
   // Extract years from job periods to create timeline markers
@@ -186,7 +167,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
       
       {/* Sticky header with timeline */}
       <motion.div 
-        className={`fixed top-0 left-0 right-0 z-[100] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-md transition-opacity duration-300 ${headerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-md transition-opacity duration-300 ${headerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         variants={headerVariants}
         initial="hidden"
         animate={headerVisible ? "visible" : "hidden"}
@@ -247,9 +228,7 @@ export default function ExperienceTimeline({ jobs }: ExperienceTimelineProps) {
         id="experience"
       >
         <div className="max-w-5xl mx-auto px-4">
-          <div ref={sectionTitleRef}>
-            <SectionTitle title="Experience" />
-          </div>
+          <SectionTitle title="Experience" />
 
           {/* Main timeline (visible when not in sticky header) */}
           <ScrollRevealSection
