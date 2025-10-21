@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero3D from '../components/Hero3D';
+import Hero from '../components/Hero';
+import Experience from '../components/Experience';
+import Skills from '../components/Skills';
+import Contact from '../components/Contact';
+---
+
+<Layout>
+	<Hero3D client:load />
+	<Hero client:load />
+	<Experience client:load />
+	<Skills client:load />
+	<Contact client:load />
+</Layout>
