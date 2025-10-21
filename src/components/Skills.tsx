@@ -52,7 +52,7 @@ function SkillTag({ skill, index }: { skill: string; index: number }) {
       viewport={{ once: true }}
       transition={{ duration: 0.3, delay: index * 0.02 }}
       whileHover={{ scale: 1.05, y: -2 }}
-      className="px-4 py-2 bg-zinc-800/50 border border-zinc-700 rounded-full text-sm text-zinc-300 hover:border-blue-500/50 hover:text-blue-400 transition-colors cursor-default"
+      className="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-full text-sm text-zinc-400 hover:border-[#d4c5a9] hover:text-[#d4c5a9] transition-all cursor-default"
     >
       {skill}
     </motion.span>
@@ -61,7 +61,7 @@ function SkillTag({ skill, index }: { skill: string; index: number }) {
 
 export default function Skills() {
   return (
-    <section className="py-20 px-6 bg-zinc-900/30">
+    <section className="py-20 md:py-32 px-6 bg-zinc-950">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -70,10 +70,10 @@ export default function Skills() {
           transition={{ duration: 0.6 }}
           className="mb-12 text-center"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-light mb-4" style={{ color: '#d4c5a9' }}>
             Technical Skills
           </h2>
-          <p className="text-zinc-400 text-lg">
+          <p className="text-zinc-500 text-base md:text-lg">
             Expert-level proficiency in modern Android development
           </p>
         </motion.div>
@@ -86,9 +86,9 @@ export default function Skills() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
-              className="bg-zinc-900/50 backdrop-blur-sm p-6 rounded-lg border border-zinc-800"
+              className="bg-black/50 backdrop-blur-sm p-6 rounded-lg border border-zinc-900"
             >
-              <h3 className="text-xl font-bold text-blue-400 mb-4">{category.title}</h3>
+              <h3 className="text-xl font-light text-zinc-300 mb-4">{category.title}</h3>
               <div className="flex flex-wrap gap-2">
                 {category.skills.map((skill, skillIndex) => (
                   <SkillTag
